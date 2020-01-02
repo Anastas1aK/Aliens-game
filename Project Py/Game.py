@@ -3,27 +3,54 @@ import random
 
 pygame.init()
 
-display_width = 800
-display_height = 600
+DISPLAY_WIDTH = 800
+DISPLAY_HEIGHT = 600
+LEFT_Y_BOUNDARY = -600
+RIGHT_Y_BOUNDARY = -200
+LEFT_X_BOUNDARY = 0
+RIGHT_X_BOUNDARY = 747
 
-display = pygame.display.set_mode((display_width, display_height))
-pygame.display.set_caption('Igra')
+PLAYER_WIDTH = 50
+PLAYER_HEIGHT = 60
+PLAYER_COORD_Y = 540
+PLAYER_SPEED = 5
+ALIEN_WIDTH = 50
+ALIEN_HEIGHT = 53
 
 
-class Alians:
-    def __init__(self, alien_x, alien_y, alien_width, alien_height, alien_img ):
+alien_x = random.randint(0, 747)
+alien_y = -ALIEN_HEIGHT
+player_coord_x = DISPLAY_WIDTH // 2 - 25
+scores = 0
+
+player_img = pygame.image.load('hero1.png')
+alien_img = pygame.image.load('al1.png')
+bullet_img = pygame.image.load('bullet.jpg')
+alien_img2 = pygame.image.load('al_2.png')
+
+clock = pygame.time.Clock()
+
+circle_rect = pygame.rect.Rect((player_coord_x, PLAYER_COORD_Y, PLAYER_WIDTH, PLAYER_HEIGHT))
+
+
+display = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
+pygame.display.set_caption('Alien game')
+
+
+class Aliens:
+    def __init__(self, alien_x, alien_y, alien_width, alien_height, alien_img):
         self.alien_x = alien_x
         self.alien_y = alien_y
-        self.alien_width = alien_width
-        self.alien_height = alien_height
-        self.alien_img = alien_img
+        self._alien_width = alien_width
+        self._alien_height = alien_height
+        self._alien_img = alien_img
 
     def generate(self):
-        self.alien_y = random.randrange(-600, -200)
-        self.alien_x = random.randint(0, 747)
+        self.alien_y = random.randrange(LEFT_Y_BOUNDARY, RIGHT_Y_BOUNDARY)
+        self.alien_x = random.randint(LEFT_X_BOUNDARY, RIGHT_X_BOUNDARY)
 
     def go(self):
-        if self.alien_y <= display_height:
+        if self.alien_y <= DISPLAY_HEIGHT:
             display.blit(alien_img, (self.alien_x, self.alien_y))
             if scores <= 200:
                 self.alien_y += 10
@@ -36,55 +63,53 @@ class Alians:
             elif 700 < scores <= 1400:
                 self.alien_y += 12
 
-
     def pos(self):
-        if self.alien_y <= display_height:
-            return 0
+        if self.alien_y <= DISPLAY_HEIGHT:
+            return False
         else:
-            return 1
+            return True
 
     def check_dmg(self, bullet):
-        if self.alien_x <= bullet.x <= self.alien_x + self.alien_width:
-            if self.alien_y <= bullet.y <= self.alien_y + self.alien_height:
-                return 1
+        if self.alien_x <= bullet.x <= self.alien_x + self._alien_width:
+            if self.alien_y <= bullet.y <= self.alien_y + self._alien_height:
+                return True
         else:
-            return 0
+            return False
 
 
-
-class Alians2:
-    def __init__(self, alien_x2, alien_y2, alien_width2, alien_height2, alien_img2 ):
+class Aliens2:
+    def __init__(self, alien_x2, alien_y2, alien_width2, alien_height2, alien_img2):
         self.alien_x2 = alien_x2
         self.alien_y2 = alien_y2
-        self.alien_width2 = alien_width2
-        self.alien_height2 = alien_height2
-        self.alien_img2 = alien_img2
+        self._alien_width2 = alien_width2
+        self._alien_height2 = alien_height2
+        self._alien_img2 = alien_img2
         self.cooldown_al2 = 0
-        self.path_x = self.alien_x2 + self.alien_width2 // 2
-        self.path_y = self.alien_y2 + self.alien_height2
+        self.path_x = self.alien_x2 + self._alien_width2 // 2
+        self.path_y = self.alien_y2 + self._alien_height2
 
     def generate2(self):
-        self.alien_y2 = random.randrange(-600, -200)
-        self.alien_x2 = random.randint(0, 747)
+        self.alien_y2 = random.randrange(LEFT_Y_BOUNDARY, RIGHT_Y_BOUNDARY)
+        self.alien_x2 = random.randint(LEFT_X_BOUNDARY, RIGHT_X_BOUNDARY)
 
     def go2(self):
-        if self.alien_y2 <= display_height:
+        if self.alien_y2 <= DISPLAY_HEIGHT:
             display.blit(alien_img2, (self.alien_x2, self.alien_y2))
             if 700 < scores <= 1200:
                 self.alien_y2 += 7
 
     def pos2(self):
-        if self.alien_y2 <= display_height:
-            return 0
+        if self.alien_y2 <= DISPLAY_HEIGHT:
+            return False
         else:
-            return 1
+            return True
 
     def check_dmg2(self, bullet):
-        if self.alien_x2 <= bullet.x <= self.alien_x2 + self.alien_width2:
-            if self.alien_y2 <= bullet.y <= self.alien_y2 + self.alien_height2:
-                return 1
+        if self.alien_x2 <= bullet.x <= self.alien_x2 + self._alien_width2:
+            if self.alien_y2 <= bullet.y <= self.alien_y2 + self._alien_height2:
+                return True
         else:
-            return 0
+            return False
 
    # def shoot(self):
     #    if not self.cooldown_al2:
@@ -116,31 +141,7 @@ class Bullet:
             return False
 
 
-player_width = 50
-player_height = 60
-cord_x = display_width // 2 - 25
-cord_y = 540
-player_speed = 5
-
-alien_width = 50
-alien_height = 53
-alien_x = random.randint(0, 747)
-alien_y = -alien_height
-
-scores = 0
-
-player_img = pygame.image.load('hero1.png')
-alien_img = pygame.image.load('al1.png')
-bullet_img = pygame.image.load('bullet.jpg')
-alien_img2 = pygame.image.load('al_2.png')
-
-clock = pygame.time.Clock()
-
-circlerect = pygame.rect.Rect((cord_x, cord_y, player_width, player_height))
-
-
 def run_game():
-
     game = True
     cooldown = 0
 
@@ -152,7 +153,7 @@ def run_game():
     all_btn_bullets = []
 
     while game:
-        pygame.time.delay(50)
+        pygame.time.delay(1)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -162,10 +163,7 @@ def run_game():
         count_scores()
         if scores <= 60:
             draw_alien(all_btn_bullets, scores)
-        elif 60 < scores <= 200:
-            draw_alien(all_btn_bullets, scores)
-            draw_array(aliens_arr)
-        elif 200 < scores <= 700:
+        elif 60 < scores <= 700:
             draw_alien(all_btn_bullets, scores)
             draw_array(aliens_arr)
         elif 700 < scores <= 1400:
@@ -174,34 +172,34 @@ def run_game():
 
         print_text('Scores: ' + str(scores), 600, 10)
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and circlerect.x > 10:
-            circlerect.x -= 20
-        if keys[pygame.K_RIGHT] and circlerect.x < 740:
-            circlerect.x += 20
+        if keys[pygame.K_LEFT] and circle_rect.x > 10:
+            circle_rect.x -= 20
+        if keys[pygame.K_RIGHT] and circle_rect.x < 740:
+            circle_rect.x += 20
         if keys[pygame.K_ESCAPE]:
             pause()
 
         if not cooldown:
             if keys[pygame.K_SPACE]:
-                all_btn_bullets.append(Bullet(circlerect.x + player_width / 2 - 4, circlerect.y + 15))
+                all_btn_bullets.append(Bullet(circle_rect.x + PLAYER_WIDTH / 2 - 4, circle_rect.y + 15))
                 cooldown = 50
         else:
             print_text('Cooldown time: ' + str(cooldown // 10), 482, 40)
             cooldown -= 5
 
         if scores == 1000:
-            aliens_arr.append(Alians(alien_x, alien_y, alien_width, alien_height, alien_img))
+            aliens_arr.append(Aliens(alien_x, alien_y, ALIEN_WIDTH, ALIEN_HEIGHT, alien_img))
         if scores == 1100:
-            aliens_arr.append(Alians(alien_x, alien_y, alien_width, alien_height, alien_img))
+            aliens_arr.append(Aliens(alien_x, alien_y, ALIEN_WIDTH, ALIEN_HEIGHT, alien_img))
         if scores == 1200:
-            aliens_arr.append(Alians(alien_x, alien_y, alien_width, alien_height, alien_img))
+            aliens_arr.append(Aliens(alien_x, alien_y, ALIEN_WIDTH, ALIEN_HEIGHT, alien_img))
 
         for bullet in all_btn_bullets:
             if not bullet.move():
                 all_btn_bullets.remove(bullet)
 
-        display.blit(player_img, circlerect)
-        if alien_collision(alien_x, alien_y, circlerect.x, circlerect.y):
+        display.blit(player_img, circle_rect)
+        if alien_collision(alien_x, alien_y, circle_rect.x, circle_rect.y):
             game = False
         if alien_collision1(aliens_arr):
             game = False
@@ -217,12 +215,12 @@ def run_game():
 
 
 def draw_alien(bullets, score):
-    global alien_x, alien_y, alien_width, alien_height, alien_img
+    global alien_x, alien_y, ALIEN_WIDTH, ALIEN_HEIGHT, alien_img
     if alien_y == -50:
         alien_x = random.randint(0, 747)
     else:
         alien_x = alien_x
-    if alien_y <= display_height:
+    if alien_y <= DISPLAY_HEIGHT:
         display.blit(alien_img, (alien_x, alien_y))
         if score <= 200:
             alien_y += 10
@@ -233,8 +231,8 @@ def draw_alien(bullets, score):
     else:
         alien_y = -50
     for bullet in bullets:
-        if alien_x <= bullet.x <= alien_x + alien_width:
-            if alien_y + alien_height >= bullet.y >= alien_y:
+        if alien_x <= bullet.x <= alien_x + ALIEN_WIDTH:
+            if alien_y + ALIEN_HEIGHT >= bullet.y >= alien_y:
                 alien_y = -50
                 alien_x = random.randint(0, 747)
                 bullets.remove(bullet)
@@ -264,33 +262,33 @@ def pause():
 
 
 def create_alien_arr(array):
-    array.append(Alians(random.randint(0, 747), -200, 50, 53, alien_img))
-    array.append(Alians(random.randint(0, 747), -600, 50, 53, alien_img))
-    array.append(Alians(random.randint(0, 747), -450, 50, 53, alien_img))
+    array.append(Aliens(random.randint(0, 747), -200, 50, 53, alien_img))
+    array.append(Aliens(random.randint(0, 747), -600, 50, 53, alien_img))
+    array.append(Aliens(random.randint(0, 747), -450, 50, 53, alien_img))
 
 
 def create_alien_arr2(array2):
-    array2.append(Alians2(random.randint(0, 747), -300, 26, 39, alien_img2))
-    array2.append(Alians2(random.randint(0, 747), -500, 26, 39, alien_img2))
-    array2.append(Alians2(random.randint(0, 747), -450, 26, 39, alien_img2))
+    array2.append(Aliens2(random.randint(0, 747), -300, 26, 39, alien_img2))
+    array2.append(Aliens2(random.randint(0, 747), -500, 26, 39, alien_img2))
+    array2.append(Aliens2(random.randint(0, 747), -450, 26, 39, alien_img2))
 
 
 def draw_array(array):
-    for Aliens in array:
-        p = Aliens.pos()
-        if p == 0:
-            Aliens.go()
-        if p == 1:
-            Aliens.generate()
+    for aliens in array:
+        p = aliens.pos()
+        if not p:
+            aliens.go()
+        if p:
+            aliens.generate()
 
 
 def draw_array2(array_al2):
-    for Aliens in array_al2:
-        p = Aliens.pos2()
-        if p == 0:
-            Aliens.go2()
-        if p == 1:
-            Aliens.generate2()
+    for aliens in array_al2:
+        p = aliens.pos2()
+        if not p:
+            aliens.go2()
+        if p:
+            aliens.generate2()
 
 
 def game_over():
@@ -330,8 +328,8 @@ def alien_collision(al_x, al_y, player_x, player_y):
 
 def alien_collision1(barriers):
     for barrier in barriers:
-        if barrier.alien_y + 42 > circlerect.y:
-            if barrier.alien_x - 50 <= circlerect.x <= barrier.alien_x + 50:
+        if barrier.alien_y + 42 > circle_rect.y:
+            if barrier.alien_x - 50 <= circle_rect.x <= barrier.alien_x + 50:
                 display.fill((255, 255, 255))
                 print_text('Scores: ' + str(scores), 350, 350)
                 return True
@@ -340,8 +338,8 @@ def alien_collision1(barriers):
 
 def alien_collision2(barriers2):
     for barrier2 in barriers2:
-        if barrier2.alien_y2 + 42 > circlerect.y:
-            if barrier2.alien_x2 - 50 <= circlerect.x <= barrier2.alien_x2 + 50:
+        if barrier2.alien_y2 + 42 > circle_rect.y:
+            if barrier2.alien_x2 - 50 <= circle_rect.x <= barrier2.alien_x2 + 50:
                 display.fill((255, 255, 255))
                 print_text('Scores: ' + str(scores), 350, 350)
                 return True
@@ -352,7 +350,7 @@ def check_alien_dmg(bullets, aliens):
     for alien in aliens:
         for bullet in bullets:
             p = alien.check_dmg(bullet)
-            if p == 1:
+            if p:
                 alien.generate()
                 bullets.remove(bullet)
 
@@ -361,12 +359,17 @@ def check_alien_dmg2(bullets, aliens2):
     for alien2 in aliens2:
         for bullet in bullets:
             p = alien2.check_dmg2(bullet)
-            if p == 1:
+            if p:
                 alien2.generate2()
                 bullets.remove(bullet)
 
 
-while run_game():
-    pass
-pygame.quit()
-quit()
+def main():
+    while run_game():
+        pass
+    pygame.quit()
+    quit()
+
+
+if __name__ == "__main__":
+    main()
